@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/thongtin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Thông tin sinh viên" />
+
+    <TextView
+        android:id="@+id/lmasv"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/thongtin"
+        android:text="Mã sinh viên:" />
+
+    <EditText
+        android:id="@+id/txtMaSv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/thongtin"
+        android:layout_toRightOf="@id/lmasv"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/ltensv"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtMaSv"
+        android:text="Tên sinh viên:" />
+
+    <EditText
+        android:id="@+id/txtTenSv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtMaSv"
+        android:layout_toRightOf="@id/ltensv"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/lgioitinh"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/txtTenSv"
+        android:text="Giới tính" />
+
+    <RadioGroup
+        android:id="@+id/rdoGroupSex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lgioitinh"
+        android:layout_toRightOf="@id/lgioitinh"
+        android:checkedButton="@id/rdoBtnNam"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rdoBtnNam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nam" />
+
+        <RadioButton
+            android:id="@+id/rdoBtnNu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nữ" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/llop"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rdoGroupSex"
+        android:text="Lớp" />
+
+    <Spinner
+        android:id="@+id/spinnerLop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rdoGroupSex"
+        android:layout_toRightOf="@id/llop" />
+
+    <LinearLayout
+        android:id="@+id/layout_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@id/llop"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnThem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Thêm" />
+
+        <Button
+            android:id="@+id/btnSua"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sửa" />
+
+        <Button
+            android:id="@+id/btnLuu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Lưu" />
+
+        <Button
+            android:id="@+id/btnLamlai"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Làm" />
+
+        <Button
+            android:id="@+id/btnxoa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Xóa" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listviewSv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/layout_btn" />
+
+</RelativeLayout>

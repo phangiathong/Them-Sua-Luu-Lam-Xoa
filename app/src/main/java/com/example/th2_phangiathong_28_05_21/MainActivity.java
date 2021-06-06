@@ -4,7 +4,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -15,6 +17,9 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.example.th2_phangiathong_28_05_21.helper.DatabaseHelper;
 
 import java.util.ArrayList;
 
@@ -32,10 +37,16 @@ public class MainActivity extends AppCompatActivity {
     int thaotac = 0; //Mặc định là thao tác thêm mới.
     String lop=""; //Spinner
     int vt = -1; //Chưa chọn vị trí nào cả trong list view.
+    DatabaseHelper mydb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Gọi constructer
+        mydb=new DatabaseHelper(this);
+        //mydb.insertData("001","Thống","Nam","1998");
+        //Log.d("okthanhcong",""+mydb.insertData("001","Thống","Nam","1998"));
+        //Toast.makeText(MainActivity.this,"ok"+mydb.insertData("001","Thống","Nam","1998"),Toast.LENGTH_LONG).show();
 
         txtmasv = findViewById(R.id.txtMaSv);
         txttensv = findViewById(R.id.txtTenSv);
@@ -66,15 +77,14 @@ public class MainActivity extends AppCompatActivity {
         lvsv = findViewById(R.id.listviewSv);
         arraylistsv = new ArrayList<String>(); //Biến arraylistsv rỗng
         //arraylistsv.add("01-Thong-1998"); //Thêm vào listview
-        adaptersv=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,arraylistsv);
-        lvsv.setAdapter(adaptersv);
+        showDataListView();
         //Sự kiện click của click view
         lvsv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 vt=position;
                 String str = arraylistsv.get(position).toString();
-                String a[]=str.split("-");
+                String a[]=str.split("@");
                 //str =01-Thong-Nam-K60
                 //a[0]->01, a[1]->Thong, a[2]->Nam ...
                 txtmasv.setText(a[0]);
@@ -127,7 +137,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Hàm nào đó để show thông báo có chắc xóa không.
-                showD(vt);
+                if(vt==-1) {
+                    Toast.makeText(MainActivity.this,"Chưa chọn phần tử để xóa",Toast.LENGTH_SHORT).show();
+                }else{
+                    showD(vt);
+                }
             }
         });
         //
@@ -148,25 +162,46 @@ public class MainActivity extends AppCompatActivity {
                     //Lấy giới tính
                     int selectedid = radiogroupsex.getCheckedRadioButtonId();
                     radiobuttonsex = findViewById(selectedid);
-                    String full = masv + "-" + tensv + "-" + radiobuttonsex.getText().toString() +"-"+lop;
-                    arraylistsv.add(full);
-                    adaptersv.notifyDataSetChanged(); //Báo listview nguồn dữ liệu có thay đổi và tự động update.
+                    String gt=radiobuttonsex.getText().toString();
+                    String full = masv + "@" + tensv + "@" + radiobuttonsex.getText().toString() +"@"+lop;
+                    //arraylistsv.add(full);
+                    //adaptersv.notifyDataSetChanged(); //Báo listview nguồn dữ liệu có thay đổi và tự động update.
+                    boolean insertkq=mydb.insertData(masv,tensv,gt,lop);
+                    if(insertkq){
+                        Toast.makeText(MainActivity.this,"Insert thành công",Toast.LENGTH_SHORT).show();
+                        arraylistsv.clear(); //Xóa tất cả các phần tử còn lưu trong mảng arraylist
+                        showDataListView();
+                    }else {
+                        Toast.makeText(MainActivity.this,"Insert không thành công",Toast.LENGTH_SHORT).show();
+                        Log.d("chen","Khongthanhcong");
+                    }
                     btnthem.setEnabled(true);
                     btnsua.setEnabled(false);
                     btnluu.setEnabled(false);
                     resetView();
                     }
-                }else { //Sửa thông tin, nhấn vào nút sửa
-                    arraylistsv.remove(vt);
+                }else { //Sửa thông tin, nhấn vào nút sửa //Thao tác = 1
+//                    arraylistsv.remove(vt);
                     //Lấy dữ liệu người dùng nhập
                     String masv = txtmasv.getText().toString();
                     String tensv = txttensv.getText().toString();
                     //Lấy giới tính
                     int selectedid = radiogroupsex.getCheckedRadioButtonId();
                     radiobuttonsex = findViewById(selectedid);
-                    String full = masv + "-" + tensv + "-" + radiobuttonsex.getText().toString() +"-"+lop;
-                    arraylistsv.add(full);
-                    adaptersv.notifyDataSetChanged(); //Báo listview nguồn dữ liệu có thay đổi và tự động update.
+                    String gt=radiobuttonsex.getText().toString();
+                    String full = masv + "@" + tensv + "@" + radiobuttonsex.getText().toString() +"@"+lop;
+                    boolean updatedkq=mydb.update(masv,tensv,gt,lop);
+                    if(updatedkq){
+                        Toast.makeText(MainActivity.this,"Update thành công",Toast.LENGTH_SHORT).show();
+//                        arraylistsv.clear(); //Xóa tất cả các phần tử còn lưu trong mảng arraylist
+//                        showDataListView();
+//                        arraylistsv.add(); //Đưa vào cuối mảng
+                        arraylistsv.set(vt,full); //Chỉ update lại đúng vị trí tại biến vt
+                        adaptersv.notifyDataSetChanged(); //Báo listview nguồn dữ liệu có thay đổi và tự động update.
+                    }else {
+                        Toast.makeText(MainActivity.this,"Update không thành công",Toast.LENGTH_SHORT).show();
+                        Log.d("chen","Khongthanhcong");
+                    }
                     btnthem.setEnabled(true);
                     btnsua.setEnabled(false);
                     btnluu.setEnabled(false);
@@ -206,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
         //Spinner trở lại ban đầu.
         spinnerlop=findViewById(R.id.spinnerLop);
         spinnerlop.setSelection(0);
+        vt=-1;
     }
     //Hiện thị lại giá trị của list view khi nhấn
     private void selectValue(Spinner spinner, Object value) {
@@ -225,12 +261,19 @@ public class MainActivity extends AppCompatActivity {
         //Yes
         builder.setPositiveButton("Yes",(dialog, which) -> {
             //Remove 1 phần tử trong mảng array list
-            arraylistsv.remove(i); //Xóa 1 phần tử trong mảng
-            adaptersv.notifyDataSetChanged(); //Update dữ liệu list view
+            String ar[]=arraylistsv.get(i).split("@");
+            String  masv=ar[0];
+            Integer deletekq=mydb.delete(masv);
+            if(deletekq>0) {
+                Toast.makeText(MainActivity.this,"Delete thành công",Toast.LENGTH_SHORT).show();
+                arraylistsv.remove(i); //Xóa 1 phần tử trong mảng
+                adaptersv.notifyDataSetChanged(); //Update dữ liệu list view
+
+            }else {
+                Toast.makeText(MainActivity.this,"Delete không thành công",Toast.LENGTH_SHORT).show();
+            }
+            //vt=-1; //Sau khi xóa thì trả lại trạng thái ban đầu.
             dialog.dismiss();//Đóng cửa sổ thông báo.
-
-            vt=-1; //Sau khi xóa thì trả lại trạng thái ban đầu.
-
             resetView();
         });
         //No
@@ -243,5 +286,24 @@ public class MainActivity extends AppCompatActivity {
         //Show
         AlertDialog alert = builder.create();
         alert.show();
+    }
+    //Xây dựng 1 hàm showDataListView SQL
+    private void showDataListView() {
+        Cursor cursor=mydb.showData();
+        //Trỏ về cùng địa chỉ chứa data.
+        if(cursor.getCount()==0) {
+            return; //Không trả về gì
+        }else {
+            while (cursor.moveToNext()){
+                String masv=cursor.getString(0);// Lấy dữ liệu cột là masv
+                String tensv=cursor.getString(1);
+                String gt=cursor.getString(2);
+                String lop=cursor.getColumnName(3);
+                String full=masv+"@"+tensv+"@"+gt+"@"+lop;
+                arraylistsv.add(full);
+            }
+            adaptersv=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,arraylistsv);
+            lvsv.setAdapter(adaptersv);
+        }
     }
 }
